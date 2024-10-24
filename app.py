@@ -98,7 +98,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Rule
 from parser import parse_rule_string_to_ast
-from evaluator import evaluate_rule  # Assuming you have an evaluate_rule function implemented
+from evaluator import evaluate_rule  
 import json
 
 app = Flask(__name__)
@@ -113,33 +113,31 @@ def index():
 @app.route('/create_rule', methods=['POST'])
 def create_rule():
     rule_string = request.json.get('rule_string')
-    rule_ast = request.json.get('rule_ast')  # Assuming this is coming from the request
+    rule_ast = request.json.get('rule_ast') 
 
     if isinstance(rule_ast, str):
-        # If rule_ast is a string, use it directly
         rule_ast_json = rule_ast
     else:
-        # If it's an object, ensure it has the to_dict() method
         rule_ast_json = json.dumps(rule_ast.to_dict())
 
     new_rule = Rule(rule_string=rule_string, rule_ast=rule_ast_json)
-    # Add additional logic to save the new_rule as needed
+    
 
 
 
 @app.route('/evaluate_rule', methods=['POST'])
 def evaluate_rule_route():
     rule_id = request.json.get('rule_id')
-    data = request.json.get('data')  # Data in JSON format
+    data = request.json.get('data')  
 
     rule = Rule.query.get(rule_id)
     if not rule:
         return jsonify({"error": "Rule not found"}), 404
 
-    rule_ast = json.loads(rule.rule_ast)  # Load the AST from the database
+    rule_ast = json.loads(rule.rule_ast)  
 
     try:
-        result = evaluate_rule(rule_ast, data)  # Evaluate the rule against the provided data
+        result = evaluate_rule(rule_ast, data)  
         return jsonify({"evaluation_result": result}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -151,5 +149,5 @@ def get_rules():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create tables if they don't exist
+        db.create_all()  
     app.run(debug=True)

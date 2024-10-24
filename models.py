@@ -11,4 +11,4 @@ class Rule(db.Model):
 
     def __init__(self, rule_string, rule_ast):
         self.rule_string = rule_string
-        self.rule_ast = json.dumps(rule_ast.to_dict())  # Convert ASTNode to a dict before JSON serialization
+        self.rule_ast = json.dumps(rule_ast.to_dict())  

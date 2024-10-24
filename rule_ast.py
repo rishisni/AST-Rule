@@ -27,11 +27,9 @@ class Node:
 
 def create_rule(rule_string):
     try:
-        # Replace logical operators to Python's operators
+       
         rule_string = rule_string.replace('AND', 'and').replace('OR', 'or')
 
-        # Here we could use eval to parse the string into a Python expression
-        # But we will first compile it into an AST to check for safety
         print(f"Parsing rule: {rule_string}")
         rule_ast = ast.parse(rule_string, mode='eval')
 
@@ -51,7 +49,7 @@ def convert_to_ast(expression):
 
     elif isinstance(expression, ast.Compare):
         left = expression.left.id
-        # Map operator to string
+        
         op_map = {
             ast.Gt: '>', ast.Lt: '<', ast.GtE: '>=', ast.LtE: '<=', ast.Eq: '==', ast.NotEq: '!='
         }
@@ -77,11 +75,11 @@ def combine_rules(rules):
 
 def evaluate_rule(ast, data):
     if ast.node_type == "operand":
-        # Split condition string into parts
+        
         field, operator, value = ast.value.split(' ')
         value = int(value) if value.isdigit() else value.strip("'")
         
-        # Perform the actual comparison
+        
         if operator == '>':
             return data[field] > value
         elif operator == '<':

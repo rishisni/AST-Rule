@@ -10,7 +10,7 @@ class ASTNode:
             'children': [child.to_dict() for child in self.children]
         }
 
-# Your other code (database setup, routes, etc.) goes here
+
 
 def evaluate_rule(node, data):
     """
@@ -20,18 +20,18 @@ def evaluate_rule(node, data):
     :return: Boolean result of the evaluation
     """
     if isinstance(node, dict):
-        # If node is a dictionary, convert it back to an ASTNode
+        
         node = ASTNode(node['value'], [ASTNode(child['value']) for child in node['children']])
 
     if not node.children:
-        # Leaf node: it's a variable or a constant
+        
         if isinstance(node.value, str) and node.value in data:
             return data[node.value]
         else:
-            # If it's a literal value (like a number), return it
+            
             return node.value
 
-    # Non-leaf node: evaluate based on the operator
+    
     operator = node.value
 
     if operator == "AND":
@@ -42,6 +42,6 @@ def evaluate_rule(node, data):
         return evaluate_rule(node.children[0], data) == evaluate_rule(node.children[1], data)
     elif operator == ">":
         return evaluate_rule(node.children[0], data) > evaluate_rule(node.children[1], data)
-    # Add more operators as needed...
+    
 
     raise ValueError(f"Unknown operator: {operator}")
