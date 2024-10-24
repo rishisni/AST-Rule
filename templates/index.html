@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Rule Management</h1>
+        
+        <h2>Create Rule</h2>
+        <form id="create-rule-form" class="mt-4">
+            <div class="form-group">
+                <label for="rule">Rule String</label>
+                <input type="text" class="form-control" id="rule" placeholder="Enter rule" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Rule</button>
+        </form>
+        
+        <div id="create-result" class="mt-4"></div>
+        
+        <h2 class="mt-5">Evaluate Rule</h2>
+        <form id="evaluate-rule-form" class="mt-4">
+            <div class="form-group">
+                <label for="ruleId">Select Rule ID</label>
+                <input type="number" class="form-control" id="ruleId" placeholder="Enter rule ID" required>
+            </div>
+            <div class="form-group">
+                <label for="data">Data (JSON format)</label>
+                <textarea class="form-control" id="data" rows="3" placeholder='{"age": 32, "department": "Sales"}' required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Evaluate Rule</button>
+        </form>
+        
+        <div id="evaluate-result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('create-rule-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const rule = document.getElementById('rule').value;
+
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `rule=${encodeURIComponent(rule)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('create-result').innerHTML = `<p>${data.message} (Rule ID: ${data.rule_id})</p>`;
+            })
+            .catch(error => {
+                document.getElementById('create-result').innerHTML = `<p>Error: ${error.message}</p>`;
+            });
+        });
+
+        document.getElementById('evaluate-rule-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const ruleId = document.getElementById('ruleId').value;
+            const data = JSON.parse(document.getElementById('data').value);
+
+            fetch('/evaluate_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rule_id: ruleId, data: data })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('evaluate-result').innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    document.getElementById('evaluate-result').innerHTML = `<p>Evaluation Result: ${data.evaluation_result}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('evaluate-result').innerHTML = `<p>Error: ${error.message}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
